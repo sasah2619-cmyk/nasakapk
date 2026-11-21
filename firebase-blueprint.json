@@ -1,0 +1,182 @@
+{
+  "entities": {
+    "SystemConfig": {
+      "title": "SystemConfig",
+      "description": "إعدادات النظام والملكية وساعات العمل وقوالب الواتساب",
+      "type": "object",
+      "properties": {
+        "app_name": { "type": "string", "description": "اسم التطبيق (نَسَق)" },
+        "owner_email": { "type": "string", "description": "البريد الإلكتروني للمالك الحالي" },
+        "business_name": { "type": "string", "description": "اسم النشاط التجاري" },
+        "business_description": { "type": "string", "description": "وصف النشاط التجاري" },
+        "business_phone": { "type": "string", "description": "رقم هاتف الإدارة" },
+        "business_address": { "type": "string", "description": "العنوان أو رابط الخريطة" },
+        "currency": { "type": "string", "description": "العملة المستخدمة" },
+        "country_code": { "type": "string", "description": "مفتاح الدولة الافتراضي للواتساب" },
+        "whatsapp_confirm_template": { "type": "string", "description": "قالب رسالة تأكيد الحجز" },
+        "whatsapp_reminder_template": { "type": "string", "description": "قالب رسالة التذكير قبل الموعد" },
+        "working_hours": { "type": "object", "description": "ساعات العمل الأسبوعية لكل يوم" },
+        "blocked_slots": { "type": "array", "description": "التواريخ والساعات المحظورة يدوياً" },
+        "previous_owner_email": { "type": "string", "description": "بريد المالك السابق للسجل فقط" },
+        "ownership_transferred_at": { "type": "string", "format": "date-time", "description": "تاريخ نقل الملكية (FieldValue.serverTimestamp())" },
+        "updated_at": { "type": "string", "format": "date-time", "description": "آخر تحديث (FieldValue.serverTimestamp())" }
+      },
+      "required": [
+        "app_name",
+        "owner_email",
+        "business_name",
+        "business_description",
+        "business_phone",
+        "business_address",
+        "currency",
+        "country_code",
+        "whatsapp_confirm_template",
+        "whatsapp_reminder_template",
+        "working_hours",
+        "blocked_slots",
+        "updated_at"
+      ]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "بيانات المستخدم المسجل عبر Google Sign-In",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "معرف المستخدم" },
+        "email": { "type": "string", "description": "البريد الإلكتروني" },
+        "display_name": { "type": "string", "description": "الاسم المعروض" },
+        "photo_url": { "type": "string", "description": "رابط الصورة الشخصية" },
+        "phone": { "type": "string", "description": "رقم الهاتف" },
+        "role": { "type": "string", "enum": ["owner", "user"], "description": "الدور الوظيفي" },
+        "is_blocked": { "type": "boolean", "description": "حالة الحظر" },
+        "total_bookings": { "type": "integer", "description": "إجمالي الحجوزات المكتملة" },
+        "total_spent": { "type": "number", "description": "إجمالي الإنفاق" },
+        "admin_notes": { "type": "string", "description": "ملاحظات الإدارة السرية" },
+        "created_at": { "type": "string", "format": "date-time", "description": "تاريخ الإنشاء (FieldValue.serverTimestamp())" },
+        "last_login": { "type": "string", "format": "date-time", "description": "آخر تسجيل دخول (FieldValue.serverTimestamp())" }
+      },
+      "required": [
+        "uid",
+        "email",
+        "display_name",
+        "phone",
+        "role",
+        "is_blocked",
+        "total_bookings",
+        "total_spent",
+        "admin_notes",
+        "created_at",
+        "last_login"
+      ]
+    },
+    "ServiceItem": {
+      "title": "ServiceItem",
+      "description": "خدمة متاحة للحجز",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "اسم الخدمة" },
+        "description": { "type": "string", "description": "وصف الخدمة" },
+        "price": { "type": "number", "description": "السعر" },
+        "duration_minutes": { "type": "integer", "description": "المدة بالدقائق" },
+        "is_active": { "type": "boolean", "description": "نشطة أم مخفية" },
+        "order_index": { "type": "integer", "description": "ترتيب العرض" },
+        "created_at": { "type": "string", "format": "date-time", "description": "تاريخ الإنشاء (FieldValue.serverTimestamp())" },
+        "updated_at": { "type": "string", "format": "date-time", "description": "تاريخ التحديث (FieldValue.serverTimestamp())" }
+      },
+      "required": [
+        "name",
+        "description",
+        "price",
+        "duration_minutes",
+        "is_active",
+        "order_index",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "حجز موعد عميل",
+      "type": "object",
+      "properties": {
+        "booking_code": { "type": "string", "description": "رمز الحجز #NSQ-XXXX" },
+        "user_uid": { "type": "string", "description": "معرف صاحب الحجز" },
+        "customer_name": { "type": "string", "description": "اسم العميل" },
+        "customer_email": { "type": "string", "description": "بريد العميل" },
+        "customer_phone": { "type": "string", "description": "هاتف العميل" },
+        "service_id": { "type": "string", "description": "معرف الخدمة" },
+        "service_name": { "type": "string", "description": "اسم الخدمة" },
+        "service_price": { "type": "number", "description": "سعر الخدمة عند الحجز" },
+        "service_duration": { "type": "integer", "description": "مدة الخدمة بالدقائق" },
+        "date": { "type": "string", "description": "تاريخ الموعد YYYY-MM-DD" },
+        "start_time": { "type": "string", "description": "وقت البداية HH:MM" },
+        "end_time": { "type": "string", "description": "وقت النهاية HH:MM" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "confirmed", "completed", "cancelled", "rejected"],
+          "description": "حالة الحجز"
+        },
+        "customer_notes": { "type": "string", "description": "ملاحظات العميل" },
+        "admin_notes": { "type": "string", "description": "ملاحظات الإدارة" },
+        "reminder_sent": { "type": "boolean", "description": "هل تم إرسال تذكير واتساب" },
+        "created_at": { "type": "string", "format": "date-time", "description": "تاريخ الإنشاء (FieldValue.serverTimestamp())" },
+        "updated_at": { "type": "string", "format": "date-time", "description": "تاريخ التحديث (FieldValue.serverTimestamp())" }
+      },
+      "required": [
+        "booking_code",
+        "user_uid",
+        "customer_name",
+        "customer_email",
+        "customer_phone",
+        "service_id",
+        "service_name",
+        "service_price",
+        "service_duration",
+        "date",
+        "start_time",
+        "end_time",
+        "status",
+        "customer_notes",
+        "admin_notes",
+        "reminder_sent",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "SlotLock": {
+      "title": "SlotLock",
+      "description": "قفل زمني خالٍ من البيانات الشخصية للتحقق من توفر المواعيد",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "description": "تاريخ الموعد YYYY-MM-DD" },
+        "start_time": { "type": "string", "description": "وقت البداية HH:MM" },
+        "end_time": { "type": "string", "description": "وقت النهاية HH:MM" },
+        "status": { "type": "string", "enum": ["active", "released"], "description": "حالة القفل" },
+        "updated_at": { "type": "string", "format": "date-time", "description": "تاريخ التحديث (FieldValue.serverTimestamp())" }
+      },
+      "required": ["date", "start_time", "end_time", "status", "updated_at"]
+    }
+  },
+  "firestore": {
+    "/system_config/{configId}": {
+      "schema": { "$ref": "#/entities/SystemConfig" },
+      "description": "إعدادات النظام والملكية (وثيقة main)"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "ملفات المستخدمين والعملاء"
+    },
+    "/services/{serviceId}": {
+      "schema": { "$ref": "#/entities/ServiceItem" },
+      "description": "قائمة الخدمات المتاحة"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "الحجوزات والمواعيد"
+    },
+    "/slot_locks/{lockId}": {
+      "schema": { "$ref": "#/entities/SlotLock" },
+      "description": "أقفال الأوقات المحجوزة للتحقق من التضارب دون كشف بيانات العملاء"
+    }
+  }
+}

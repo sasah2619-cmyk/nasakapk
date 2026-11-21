@@ -1,0 +1,6 @@
+{
+  "name": "نَسَق",
+  "description": "تطبيق سحابي لإدارة المواعيد والحجوزات للورش والعيادات والصالونات ومراكز الخدمات",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

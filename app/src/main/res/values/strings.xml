@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">نَسَق</string>
+    <string name="app_tagline">منصة إدارة المواعيد والحجوزات السحابية</string>
+    <string name="sign_in_with_google">تسجيل الدخول بحساب جوجل</string>
+    <string name="sign_out">تسجيل الخروج</string>
+    <string name="tab_book">حجز موعد</string>
+    <string name="tab_my_bookings">حجوزاتي</string>
+    <string name="tab_owner_dashboard">الطلبات</string>
+    <string name="tab_owner_services">الخدمات</string>
+    <string name="tab_owner_schedule">الجدول</string>
+    <string name="tab_owner_customers">العملاء</string>
+    <string name="tab_owner_settings">الإعدادات</string>
+    <string name="status_pending">قيد الانتظار</string>
+    <string name="status_confirmed">مؤكد</string>
+    <string name="status_completed">مكتمل</string>
+    <string name="status_cancelled">ملغي</string>
+    <string name="status_rejected">مرفوض</string>
+    <string name="blocked_account_title">حسابك مقيد حالياً</string>
+    <string name="blocked_account_desc">تم تقييد إمكانية إنشاء حجوزات جديدة لهذا الحساب. يرجى التواصل مع الإدارة للمساعدة.</string>
+    <string name="loading_data">جاري تحميل البيانات...</string>
+    <string name="retry">إعادة المحاولة</string>
+</resources>

@@ -1,0 +1,298 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email_verified == true;
+    }
+
+    function getCurrentOwnerEmail() {
+      return exists(/databases/$(database)/documents/system_config/main)
+        ? get(/databases/$(database)/documents/system_config/main).data.owner_email
+        : 'sasah2619@gmail.com';
+    }
+
+    function isCurrentOwner() {
+      return isSignedIn() && request.auth.token.email == getCurrentOwnerEmail();
+    }
+
+    function isUserBlocked() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_blocked == true;
+    }
+
+    function isValidSystemConfig(data) {
+      return data.keys().hasAll([
+          'app_name', 'owner_email', 'business_name', 'business_description',
+          'business_phone', 'business_address', 'currency', 'country_code',
+          'whatsapp_confirm_template', 'whatsapp_reminder_template',
+          'working_hours', 'blocked_slots', 'updated_at'
+        ])
+        && data.keys().hasOnly([
+          'app_name', 'owner_email', 'business_name', 'business_description',
+          'business_phone', 'business_address', 'currency', 'country_code',
+          'whatsapp_confirm_template', 'whatsapp_reminder_template',
+          'working_hours', 'blocked_slots', 'previous_owner_email',
+          'ownership_transferred_at', 'updated_at'
+        ])
+        && data.app_name is string && data.app_name.size() >= 1 && data.app_name.size() <= 40
+        && data.owner_email is string && data.owner_email.size() >= 4 && data.owner_email.size() <= 150
+        && data.business_name is string && data.business_name.size() >= 1 && data.business_name.size() <= 120
+        && data.business_description is string && data.business_description.size() <= 500
+        && data.business_phone is string && data.business_phone.size() <= 30
+        && data.business_address is string && data.business_address.size() <= 300
+        && data.currency is string && data.currency.size() >= 1 && data.currency.size() <= 20
+        && data.country_code is string && data.country_code.size() >= 1 && data.country_code.size() <= 10
+        && data.whatsapp_confirm_template is string && data.whatsapp_confirm_template.size() <= 1000
+        && data.whatsapp_reminder_template is string && data.whatsapp_reminder_template.size() <= 1000
+        && data.working_hours is map
+        && data.working_hours.keys().hasAll(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])
+        && data.working_hours.keys().hasOnly(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])
+        && data.blocked_slots is list && data.blocked_slots.size() <= 500
+        && (data.blocked_slots.size() == 0 || data.blocked_slots[0] is string)
+        && (!('previous_owner_email' in data) || (data.previous_owner_email is string && data.previous_owner_email.size() <= 150))
+        && (!('ownership_transferred_at' in data) || (data.ownership_transferred_at is timestamp && data.ownership_transferred_at <= request.time))
+        && data.updated_at is timestamp && data.updated_at <= request.time;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll([
+          'uid', 'email', 'display_name', 'phone', 'role', 'is_blocked',
+          'total_bookings', 'total_spent', 'admin_notes', 'created_at', 'last_login'
+        ])
+        && data.keys().hasOnly([
+          'uid', 'email', 'display_name', 'photo_url', 'phone', 'role', 'is_blocked',
+          'total_bookings', 'total_spent', 'admin_notes', 'created_at', 'last_login'
+        ])
+        && data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 150
+        && data.display_name is string && data.display_name.size() <= 120
+        && (!('photo_url' in data) || (data.photo_url is string && data.photo_url.size() <= 500))
+        && data.phone is string && data.phone.size() <= 30
+        && data.role in ['owner', 'user']
+        && data.is_blocked is bool
+        && data.total_bookings is int && data.total_bookings >= 0
+        && (data.total_spent is int || data.total_spent is float) && data.total_spent >= 0
+        && data.admin_notes is string && data.admin_notes.size() <= 1000
+        && data.created_at is timestamp && data.created_at <= request.time
+        && data.last_login is timestamp && data.last_login <= request.time;
+    }
+
+    function isValidService(data) {
+      return data.keys().hasAll([
+          'name', 'description', 'price', 'duration_minutes', 'is_active',
+          'order_index', 'created_at', 'updated_at'
+        ])
+        && data.keys().hasOnly([
+          'name', 'description', 'price', 'duration_minutes', 'is_active',
+          'order_index', 'created_at', 'updated_at'
+        ])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
+        && data.description is string && data.description.size() <= 500
+        && (data.price is int || data.price is float) && data.price >= 0
+        && data.duration_minutes is int && data.duration_minutes >= 5 && data.duration_minutes <= 720
+        && data.is_active is bool
+        && data.order_index is int && data.order_index >= 0
+        && data.created_at is timestamp && data.created_at <= request.time
+        && data.updated_at is timestamp && data.updated_at <= request.time;
+    }
+
+    function isValidAppointment(data) {
+      return data.keys().hasAll([
+          'booking_code', 'user_uid', 'customer_name', 'customer_email', 'customer_phone',
+          'service_id', 'service_name', 'service_price', 'service_duration',
+          'date', 'start_time', 'end_time', 'status', 'customer_notes',
+          'admin_notes', 'reminder_sent', 'created_at', 'updated_at'
+        ])
+        && data.keys().hasOnly([
+          'booking_code', 'user_uid', 'customer_name', 'customer_email', 'customer_phone',
+          'service_id', 'service_name', 'service_price', 'service_duration',
+          'date', 'start_time', 'end_time', 'status', 'customer_notes',
+          'admin_notes', 'reminder_sent', 'created_at', 'updated_at'
+        ])
+        && data.booking_code is string && data.booking_code.size() >= 4 && data.booking_code.size() <= 20
+        && data.user_uid is string && data.user_uid.size() >= 1 && data.user_uid.size() <= 128
+        && data.customer_name is string && data.customer_name.size() >= 1 && data.customer_name.size() <= 120
+        && data.customer_email is string && data.customer_email.size() >= 3 && data.customer_email.size() <= 150
+        && data.customer_phone is string && data.customer_phone.size() <= 30
+        && data.service_id is string && isValidId(data.service_id)
+        && data.service_name is string && data.service_name.size() >= 1 && data.service_name.size() <= 100
+        && (data.service_price is int || data.service_price is float) && data.service_price >= 0
+        && data.service_duration is int && data.service_duration >= 5 && data.service_duration <= 720
+        && data.date is string && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.start_time is string && data.start_time.matches('^[0-9]{2}:[0-9]{2}$')
+        && data.end_time is string && data.end_time.matches('^[0-9]{2}:[0-9]{2}$')
+        && data.status in ['pending', 'confirmed', 'completed', 'cancelled', 'rejected']
+        && data.customer_notes is string && data.customer_notes.size() <= 500
+        && data.admin_notes is string && data.admin_notes.size() <= 500
+        && data.reminder_sent is bool
+        && data.created_at is timestamp && data.created_at <= request.time
+        && data.updated_at is timestamp && data.updated_at <= request.time;
+    }
+
+    function isValidSlotLock(data) {
+      return data.keys().hasAll(['date', 'start_time', 'end_time', 'status', 'updated_at'])
+        && data.keys().hasOnly(['date', 'start_time', 'end_time', 'status', 'updated_at'])
+        && data.date is string && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.start_time is string && data.start_time.matches('^[0-9]{2}:[0-9]{2}$')
+        && data.end_time is string && data.end_time.matches('^[0-9]{2}:[0-9]{2}$')
+        && data.status in ['active', 'released']
+        && data.updated_at is timestamp && data.updated_at <= request.time;
+    }
+
+    // إعدادات النظام والملكية
+    match /system_config/{configId} {
+      allow get: if configId == 'main';
+      allow list: if false;
+      allow create: if configId == 'main'
+        && isSignedIn()
+        && request.auth.token.email == 'sasah2619@gmail.com'
+        && incoming().owner_email == 'sasah2619@gmail.com'
+        && isValidSystemConfig(incoming());
+      allow update: if configId == 'main'
+        && isCurrentOwner()
+        && isValidSystemConfig(incoming());
+      allow delete: if false;
+    }
+
+    // المستخدمون
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && (isCurrentOwner() || request.auth.uid == userId);
+      allow list: if isCurrentOwner();
+
+      allow create: if isSignedIn()
+        && isValidId(userId)
+        && request.auth.uid == userId
+        && isValidUser(incoming())
+        && incoming().uid == userId
+        && incoming().email == request.auth.token.email
+        && incoming().is_blocked == false
+        && incoming().total_bookings == 0
+        && incoming().total_spent == 0
+        && incoming().admin_notes == ''
+        && (incoming().role == 'user' || (isCurrentOwner() && incoming().role == 'owner'));
+
+      allow update: if isSignedIn()
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email
+        && incoming().created_at == existing().created_at
+        && (
+          isCurrentOwner() || (
+            request.auth.uid == userId
+            && incoming().role == existing().role
+            && incoming().is_blocked == existing().is_blocked
+            && incoming().admin_notes == existing().admin_notes
+            && incoming().total_bookings == existing().total_bookings
+            && incoming().total_spent == existing().total_spent
+            && incoming().diff(existing()).affectedKeys().hasOnly(['display_name', 'photo_url', 'phone', 'last_login'])
+          )
+        );
+
+      allow delete: if isCurrentOwner() && isValidId(userId);
+    }
+
+    // الخدمات
+    match /services/{serviceId} {
+      allow get: if isValidId(serviceId);
+      allow list: if true;
+      allow create: if isCurrentOwner() && isValidId(serviceId) && isValidService(incoming());
+      allow update: if isCurrentOwner()
+        && isValidId(serviceId)
+        && isValidService(incoming())
+        && incoming().created_at == existing().created_at;
+      allow delete: if isCurrentOwner() && isValidId(serviceId);
+    }
+
+    // الحجوزات والطلبات
+    match /appointments/{appointmentId} {
+      allow get: if isSignedIn()
+        && isValidId(appointmentId)
+        && (isCurrentOwner() || existing().user_uid == request.auth.uid);
+      allow list: if isSignedIn()
+        && (isCurrentOwner() || existing().user_uid == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && isValidId(appointmentId)
+        && isValidAppointment(incoming())
+        && exists(/databases/$(database)/documents/services/$(incoming().service_id))
+        && (
+          isCurrentOwner() || (
+            !isUserBlocked()
+            && incoming().user_uid == request.auth.uid
+            && incoming().customer_email == request.auth.token.email
+            && incoming().status == 'pending'
+            && incoming().admin_notes == ''
+            && incoming().reminder_sent == false
+          )
+        );
+
+      allow update: if isSignedIn()
+        && isValidId(appointmentId)
+        && isValidAppointment(incoming())
+        && incoming().user_uid == existing().user_uid
+        && incoming().created_at == existing().created_at
+        && (
+          isCurrentOwner() || (
+            !isUserBlocked()
+            && existing().user_uid == request.auth.uid
+            && existing().status in ['pending', 'confirmed']
+            && incoming().status == 'cancelled'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updated_at'])
+          )
+        );
+
+      allow delete: if isCurrentOwner() && isValidId(appointmentId);
+    }
+
+    // أقفال الأوقات المحجوزة (خالٍ من البيانات الشخصية للتحقق من توفر المواعيد)
+    match /slot_locks/{lockId} {
+      allow get: if isSignedIn() && isValidId(lockId);
+      allow list: if isSignedIn();
+      allow create: if isSignedIn()
+        && isValidId(lockId)
+        && isValidSlotLock(incoming())
+        && incoming().status == 'active'
+        && (
+          isCurrentOwner() || (
+            !isUserBlocked()
+            && existsAfter(/databases/$(database)/documents/appointments/$(lockId))
+          )
+        );
+      allow update: if isSignedIn()
+        && isValidId(lockId)
+        && isValidSlotLock(incoming())
+        && (
+          isCurrentOwner() || (
+            !isUserBlocked()
+            && get(/databases/$(database)/documents/appointments/$(lockId)).data.user_uid == request.auth.uid
+            && existing().status == 'active'
+            && incoming().status == 'released'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updated_at'])
+          )
+        );
+      allow delete: if isCurrentOwner() && isValidId(lockId);
+    }
+  }
+}
