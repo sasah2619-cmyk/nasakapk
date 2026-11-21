@@ -25,16 +25,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -115,11 +115,12 @@ fun CustomerBookingScreen(
     var createdCodeDialog by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(userProfile?.display_name, userProfile?.phone) {
-        if (customerName.isBlank() && !userProfile?.display_name.isNullOrBlank()) {
-            customerName = userProfile?.display_name.orEmpty()
+        val profile = userProfile ?: return@LaunchedEffect
+        if (customerName.isBlank() && profile.display_name.isNotBlank()) {
+            customerName = profile.display_name
         }
-        if (customerPhone.isBlank() && !userProfile?.phone.isNullOrBlank()) {
-            customerPhone = userProfile?.phone.orEmpty()
+        if (customerPhone.isBlank() && profile.phone.isNotBlank()) {
+            customerPhone = profile.phone
         }
     }
 
@@ -232,9 +233,9 @@ fun CustomerBookingScreen(
             // Step 1: Select Service
             item {
                 NasaqSectionHeader(
-                    title = "1. اختر الخدمة المطلوبة",
-                    subtitle = "أسعار واضحة ومدد محددة لكل خدمة",
-                    icon = Icons.Default.Spa,
+                    title = "1. اختر خدمة الحلاقة",
+                    subtitle = "قص شعر، تهذيب لحية، أو باقة متكاملة",
+                    icon = Icons.Default.ContentCut,
                 )
             }
 
@@ -245,9 +246,9 @@ fun CustomerBookingScreen(
                     if (activeServices.isEmpty()) {
                         item {
                             NasaqEmptyState(
-                                icon = Icons.Default.Spa,
+                                icon = Icons.Default.ContentCut,
                                 title = "لا توجد خدمات متاحة حالياً",
-                                subtitle = "سيقوم صاحب النشاط بإضافة الخدمات المتوفرة للحجز قريباً.",
+                                subtitle = "سيتم عرض الخدمات هنا فور إضافتها من قبل الحلاق.",
                             )
                         }
                     } else {
@@ -269,7 +270,7 @@ fun CustomerBookingScreen(
                 item {
                     NasaqSectionHeader(
                         title = "2. اختر اليوم المناسب",
-                        subtitle = "الأيام المغلقة أو المحظورة تظهر بعلامة مغلق",
+                        subtitle = "الأيام المتاحة للحجز خلال الأسبوعين القادمين",
                         icon = Icons.Default.CalendarToday,
                     )
                 }
@@ -381,7 +382,7 @@ fun CustomerBookingScreen(
                 item {
                     NasaqSectionHeader(
                         title = "4. بيانات الحجز والتأكيد",
-                        subtitle = "تصل رسالة التأكيد والتذكير على رقم هاتفك",
+                        subtitle = "تصل رسالة تأكيد الموعد من الحلاق على رقم هاتفك",
                         icon = Icons.Default.Person,
                     )
                 }
@@ -419,7 +420,7 @@ fun CustomerBookingScreen(
                                 value = customerNotes,
                                 onValueChange = { customerNotes = it },
                                 label = { Text("ملاحظات إضافية (اختياري)") },
-                                leadingIcon = { Icon(Icons.Default.Notes, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null) },
                                 maxLines = 3,
                                 modifier = Modifier.fillMaxWidth(),
                             )
@@ -527,7 +528,7 @@ fun CustomerBookingScreen(
             title = { Text("تم إرسال طلب الحجز!") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("تم تسجيل طلبك بنجاح وهو الآن قيد المراجعة والتأكيد من الإدارة.")
+                    Text("تم إرسال طلب موعدك بنجاح، وسيتم تأكيده قريباً.")
                     Surface(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(10.dp),

@@ -18,10 +18,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -73,9 +73,9 @@ fun CustomerBookingsScreen(
         ) {
             item {
                 NasaqSectionHeader(
-                    title = "سجل حجوزاتي",
-                    subtitle = "تحديث فوري لحالة مواعيدك القادمة والسابقة",
-                    icon = Icons.Default.EventNote,
+                    title = "حجوزاتي",
+                    subtitle = "مواعيدك القادمة والسابقة",
+                    icon = Icons.AutoMirrored.Filled.EventNote,
                 )
             }
 

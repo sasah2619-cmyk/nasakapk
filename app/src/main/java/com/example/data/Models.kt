@@ -34,18 +34,18 @@ data class DaySchedule(
 @Keep
 @IgnoreExtraProperties
 data class SystemConfig(
-    val app_name: String = "نَسَق",
+    val app_name: String = "حلاقة المصطفى",
     val owner_email: String = INITIAL_OWNER_EMAIL,
-    val business_name: String = "مركز نَسَق للخدمات والمواعيد",
-    val business_description: String = "احجز موعدك بكل سهولة ومرونة واختر الخدمة والوقت المناسبين لك.",
+    val business_name: String = "حلاقة المصطفى",
+    val business_description: String = "أهلاً بك في حلاقة المصطفى — احجز موعدك بسهولة بدون انتظار.",
     val business_phone: String = "07700000000",
     val business_address: String = "بغداد - المنصور",
     val currency: String = "د.ع",
     val country_code: String = "+964",
     val whatsapp_confirm_template: String =
-        "مرحباً {customer_name}، تم تأكيد حجزك في {business_name} لخدمة ({service_name}) يوم {date} الساعة {start_time}. رمز الحجز: {booking_code}",
+        "مرحباً {customer_name}، تم تأكيد موعدك في {business_name} لخدمة ({service_name}) يوم {date} الساعة {start_time}. رمز الحجز: {booking_code}",
     val whatsapp_reminder_template: String =
-        "تذكير لطيف من {business_name}: موعدك لخدمة ({service_name}) سيكون يوم {date} الساعة {start_time}. رمز الحجز: {booking_code}",
+        "تذكير بموعدك في {business_name}: خدمة ({service_name}) يوم {date} الساعة {start_time}. رمز الحجز: {booking_code}",
     val working_hours: Map<String, DaySchedule> = defaultWorkingHours(),
     val blocked_slots: List<String> = emptyList(),
     val previous_owner_email: String? = null,
@@ -106,9 +106,9 @@ fun DocumentSnapshot.toSystemConfigOrNull(): SystemConfig? {
     }
     val blocked = (data["blocked_slots"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
     return SystemConfig(
-        app_name = (data["app_name"] as? String) ?: "نَسَق",
+        app_name = (data["app_name"] as? String) ?: "حلاقة المصطفى",
         owner_email = (data["owner_email"] as? String) ?: INITIAL_OWNER_EMAIL,
-        business_name = (data["business_name"] as? String) ?: "مركز نَسَق للخدمات والمواعيد",
+        business_name = (data["business_name"] as? String) ?: "حلاقة المصطفى",
         business_description = (data["business_description"] as? String) ?: "",
         business_phone = (data["business_phone"] as? String) ?: "",
         business_address = (data["business_address"] as? String) ?: "",

@@ -18,17 +18,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -102,12 +102,12 @@ import kotlinx.coroutines.launch
 
 private enum class CustomerTab(val label: String, val icon: ImageVector) {
     BOOK("حجز موعد", Icons.Default.CalendarMonth),
-    MY_BOOKINGS("حجوزاتي", Icons.Default.EventNote),
+    MY_BOOKINGS("حجوزاتي", Icons.AutoMirrored.Filled.EventNote),
 }
 
 private enum class OwnerTab(val label: String, val icon: ImageVector) {
     DASHBOARD("الطلبات", Icons.Default.Dashboard),
-    SERVICES("الخدمات", Icons.Default.Spa),
+    SERVICES("الخدمات", Icons.Default.ContentCut),
     SCHEDULE("الجدول", Icons.Default.Schedule),
     CUSTOMERS("العملاء", Icons.Default.Group),
     SETTINGS("الإعدادات", Icons.Default.Settings),
@@ -236,13 +236,13 @@ private fun AuthenticatedNasaqContent(user: FirebaseUser) {
                             Spacer(Modifier.width(10.dp))
                             Column {
                                 Text(
-                                    text = config.app_name,
+                                    text = stringResource(R.string.app_name),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 1,
                                 )
                                 Text(
-                                    text = if (activeOwnerMode) "لوحة إدارة المالك" else config.business_name,
+                                    text = if (activeOwnerMode) "لوحة الإدارة" else stringResource(R.string.app_tagline),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 1,
@@ -472,7 +472,7 @@ private fun BlockedAccountScreen(
                     ) {
                         Icon(Icons.Default.Phone, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
-                        Text("الاتصال بالإدارة ($businessPhone)")
+                        Text("الاتصال بالحلاق ($businessPhone)")
                     }
                 }
                 OutlinedButton(

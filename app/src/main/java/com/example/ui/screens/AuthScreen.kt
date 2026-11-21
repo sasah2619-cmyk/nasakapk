@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Card
@@ -137,12 +136,12 @@ fun AuthScreen(
                             Spacer(Modifier.width(14.dp))
                             Column {
                                 Text(
-                                    text = "نَسَق",
-                                    style = MaterialTheme.typography.displayLarge,
+                                    text = "حلاقة المصطفى",
+                                    style = MaterialTheme.typography.headlineMedium,
                                     color = Color.White,
                                 )
                                 Text(
-                                    text = "تنظيم المواعيد والحجوزات باحترافية",
+                                    text = "أناقة وإتقان في كل موعد",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = NasaqTurquoise,
                                 )
@@ -159,14 +158,14 @@ fun AuthScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.CloudDone,
+                                    imageVector = Icons.Default.CalendarMonth,
                                     contentDescription = null,
                                     tint = NasaqTurquoise,
                                     modifier = Modifier.size(18.dp),
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    text = "متصل سحابياً — للعيادات والورش والصالونات",
+                                    text = "احجز دورك مسبقاً بدون انتظار في الصالون",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = Color.White,
                                 )
@@ -176,7 +175,7 @@ fun AuthScreen(
                 }
             }
 
-            // Feature Highlights
+            // Brand Welcome & Highlights
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
@@ -188,30 +187,30 @@ fun AuthScreen(
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
                     Text(
-                        text = "مرحباً بك في نَسَق",
+                        text = "أهلاً بك في حلاقة المصطفى",
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = "سجّل دخولك بنقرة واحدة عبر حساب جوجل لحجز موعدك ومتابعة حالته لحظياً، أو لإدارة نشاطك التجاري بسهولة.",
+                        text = "اختر الخدمة واليوم والوقت الذي يناسبك لتكون جاهزاً عند وصولك دون انتظار.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
                     FeatureItemRow(
                         icon = Icons.Default.CalendarMonth,
-                        title = "حجز سريع حسب الأوقات المتاحة",
-                        subtitle = "اختيار الخدمة واليوم والساعة المتاحة مع منع التضارب تلقائياً",
+                        title = "اختر وقتك بكل سهولة",
+                        subtitle = "تظهر الأوقات المتاحة فقط لتحديد موعدك بدقة",
                     )
                     FeatureItemRow(
                         icon = Icons.Default.NotificationsActive,
-                        title = "تأكيد وتذكير عبر واتساب",
-                        subtitle = "رسائل جاهزة ومخصصة لتأكيد الحجز والتذكير قبل الموعد",
+                        title = "تأكيد وتذكير بموعدك",
+                        subtitle = "استلم رسالة تأكيد وتذكير قبل موعد الحلاقة عبر واتساب",
                     )
                     FeatureItemRow(
                         icon = Icons.Default.VerifiedUser,
-                        title = "حماية سحابية وخصوصية تامة",
-                        subtitle = "مصادقة جوجل وقواعد أمان محكمة تحفظ بياناتك ومواعيدك",
+                        title = "متابعة حجوزاتك في أي وقت",
+                        subtitle = "اعرف تفاصيل موعدك القادم أو عدّله بسهولة",
                     )
                 }
             }
@@ -240,7 +239,7 @@ fun AuthScreen(
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        text = "يتم ربط حسابك تلقائياً بملفك الشخصي وسجل مواعيدك",
+                        text = "سجّل دخولك لحفظ مواعيدك ومتابعتها",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,

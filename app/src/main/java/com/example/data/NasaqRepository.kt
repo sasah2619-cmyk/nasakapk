@@ -158,9 +158,6 @@ class NasaqRepository(
                 val initialConfig = SystemConfig(owner_email = INITIAL_OWNER_EMAIL).toWriteMap()
                 configRef.set(initialConfig).await()
                 ownerEmail = INITIAL_OWNER_EMAIL
-                seedDefaultServicesIfEmpty()
-            } else if (configSnap.exists() && userEmail.equals(ownerEmail, ignoreCase = true)) {
-                seedDefaultServicesIfEmpty()
             }
 
             val isOwner = userEmail.equals(ownerEmail, ignoreCase = true)
@@ -202,36 +199,6 @@ class NasaqRepository(
             handleFirestoreError(e, OperationType.WRITE, path)
             Result.failure(e)
         }
-    }
-
-    private suspend fun seedDefaultServicesIfEmpty() {
-        val existingServices = db.collection("services").limit(1).get().await()
-        if (!existingServices.isEmpty) return
-
-        val defaults = listOf(
-            Triple("استشارة وفحص مبدئي", "تقييم شامل للحالة وتحديد الخطة المناسبة بدقة.", 25000.0 to 30),
-            Triple("خدمة العناية المتكاملة", "جلسة تنفيذ كاملة بأحدث الأدوات والمعايير.", 45000.0 to 45),
-            Triple("صيانة وفحص سريع", "فحص دقيق وإصلاح فوري للأعطال الشائعة.", 35000.0 to 30),
-            Triple("باقة المتابعة الدورية", "زيارة متابعة سريعة للتأكد من جودة النتائج.", 15000.0 to 20),
-        )
-        val batch = db.batch()
-        defaults.forEachIndexed { index, (name, desc, priceAndDuration) ->
-            val docRef = db.collection("services").document()
-            batch.set(
-                docRef,
-                mapOf(
-                    "name" to name,
-                    "description" to desc,
-                    "price" to priceAndDuration.first,
-                    "duration_minutes" to priceAndDuration.second,
-                    "is_active" to true,
-                    "order_index" to index,
-                    "created_at" to FieldValue.serverTimestamp(),
-                    "updated_at" to FieldValue.serverTimestamp(),
-                )
-            )
-        }
-        batch.commit().await()
     }
 
     suspend fun updateMyPhone(phone: String): Result<Unit> {
@@ -657,7 +624,7 @@ class NasaqRepository(
         val path = "system_config/main"
         return try {
             requireUserId()
-            require(config.business_name.trim().isNotEmpty()) { "يرجى إدخال اسم النشاط التجاري" }
+            require(config.business_name.trim().isNotEmpty()) { "يرجى إدخال اسم صالون الحلاقة" }
             db.collection("system_config").document("main")
                 .update(config.toWriteMap(includeTransferFields = false))
                 .await()

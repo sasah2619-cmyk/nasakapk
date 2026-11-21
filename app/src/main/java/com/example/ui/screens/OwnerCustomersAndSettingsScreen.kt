@@ -345,7 +345,7 @@ fun OwnerSettingsScreen(
         ) {
             item {
                 NasaqSectionHeader(
-                    title = "إعدادات النشاط التجاري",
+                    title = "إعدادات صالون الحلاقة",
                     subtitle = "تظهر هذه البيانات للعملاء في أعلى صفحة الحجز",
                     icon = Icons.Default.Settings,
                 )
@@ -365,7 +365,7 @@ fun OwnerSettingsScreen(
                         OutlinedTextField(
                             value = businessName,
                             onValueChange = { businessName = it },
-                            label = { Text("اسم النشاط التجاري") },
+                            label = { Text("اسم صالون الحلاقة") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -445,7 +445,7 @@ fun OwnerSettingsScreen(
                         ) {
                             Icon(Icons.Default.Save, contentDescription = null)
                             Spacer(Modifier.width(8.dp))
-                            Text("حفظ إعدادات النظام")
+                            Text("حفظ الإعدادات")
                         }
                     }
                 }

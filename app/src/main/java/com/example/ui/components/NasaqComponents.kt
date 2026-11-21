@@ -62,7 +62,7 @@ fun NasaqBrandLogo(
     ) {
         Image(
             painter = painterResource(id = R.drawable.nasaq_app_icon_1795267453769),
-            contentDescription = "شعار تطبيق نَسَق",
+            contentDescription = "شعار حلاقة المصطفى",
             contentScale = ContentScale.Crop,
         )
     }

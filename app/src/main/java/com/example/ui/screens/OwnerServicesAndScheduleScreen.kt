@@ -23,11 +23,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -100,9 +100,9 @@ fun OwnerServicesScreen(
         ) {
             item {
                 NasaqSectionHeader(
-                    title = "إدارة الخدمات",
-                    subtitle = "أضف أو عدّل الخدمات والأسعار ومدد التنفيذ",
-                    icon = Icons.Default.Spa,
+                    title = "إدارة خدمات الحلاقة",
+                    subtitle = "أضف أو عدّل خدمات القص واللحية والأسعار والمدة",
+                    icon = Icons.Default.ContentCut,
                 )
             }
 
@@ -114,9 +114,9 @@ fun OwnerServicesScreen(
                     if (list.isEmpty()) {
                         item {
                             NasaqEmptyState(
-                                icon = Icons.Default.Spa,
+                                icon = Icons.Default.ContentCut,
                                 title = "لا توجد خدمات مسجلة",
-                                subtitle = "اضغط على زر (+) لإضافة أول خدمة لمركزك.",
+                                subtitle = "اضغط على زر (+) لإضافة أول خدمة حلاقة.",
                             )
                         }
                     } else {
