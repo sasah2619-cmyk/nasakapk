@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/nasaq_app_icon_1795267453769"
+        android:drawable="@drawable/barber_logo_icon_1795270584584"
         android:gravity="center" />
 </layer-list>

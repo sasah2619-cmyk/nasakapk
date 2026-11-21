@@ -61,7 +61,7 @@ fun NasaqBrandLogo(
         border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
     ) {
         Image(
-            painter = painterResource(id = R.drawable.nasaq_app_icon_1795267453769),
+            painter = painterResource(id = R.drawable.barber_logo_icon_1795270584584),
             contentDescription = "شعار حلاقة المصطفى",
             contentScale = ContentScale.Crop,
         )
