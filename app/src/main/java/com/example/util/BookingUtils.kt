@@ -193,13 +193,25 @@ object BookingUtils {
         appointment: Appointment,
         config: SystemConfig,
     ): String {
-        return template
+        val legacyWordRegex = Regex("(^|\\s)نَ?سَ?ق(?=$|\\s)")
+        val rawBiz = config.business_name.trim()
+        val brandName = rawBiz
+            .takeIf { it.isNotEmpty() && !it.contains("نَسَق") && !legacyWordRegex.containsMatchIn(it) }
+            ?: "حلاقة المصطفى"
+        val sourceTemplate = template.ifBlank { SystemConfig().whatsapp_confirm_template }
+        return sourceTemplate
             .replace("{customer_name}", appointment.customer_name)
             .replace("{service_name}", appointment.service_name)
             .replace("{date}", appointment.date)
             .replace("{start_time}", formatArabicTime12h(appointment.start_time))
             .replace("{booking_code}", appointment.booking_code)
-            .replace("{business_name}", config.business_name)
+            .replace("{business_name}", brandName)
+            .replace("مركز نَسَق للخدمات", brandName)
+            .replace("مركز نسق للخدمات", brandName)
+            .replace("صالون نَسَق للحلاقة", brandName)
+            .replace("صالون نسق للحلاقة", brandName)
+            .replace("نَسَق", brandName)
+            .replace(legacyWordRegex, "$1$brandName")
     }
 
     fun openWhatsApp(

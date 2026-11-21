@@ -161,6 +161,34 @@ class NasaqRepository(
             }
 
             val isOwner = userEmail.equals(ownerEmail, ignoreCase = true)
+            if (configSnap.exists() && isOwner) {
+                val parsed = configSnap.toSystemConfigOrNull()
+                val rawApp = configSnap.getString("app_name").orEmpty()
+                val rawBiz = configSnap.getString("business_name").orEmpty()
+                val rawDesc = configSnap.getString("business_description").orEmpty()
+                val rawConf = configSnap.getString("whatsapp_confirm_template").orEmpty()
+                val rawRem = configSnap.getString("whatsapp_reminder_template").orEmpty()
+                if (parsed != null && (
+                        rawApp != parsed.app_name ||
+                        rawBiz != parsed.business_name ||
+                        rawDesc != parsed.business_description ||
+                        rawConf != parsed.whatsapp_confirm_template ||
+                        rawRem != parsed.whatsapp_reminder_template
+                    )
+                ) {
+                    path = configRef.path
+                    configRef.update(
+                        mapOf(
+                            "app_name" to parsed.app_name,
+                            "business_name" to parsed.business_name,
+                            "business_description" to parsed.business_description,
+                            "whatsapp_confirm_template" to parsed.whatsapp_confirm_template,
+                            "whatsapp_reminder_template" to parsed.whatsapp_reminder_template,
+                            "updated_at" to FieldValue.serverTimestamp(),
+                        )
+                    ).await()
+                }
+            }
             val userRef = db.collection("users").document(uid)
             path = userRef.path
             val userSnap = userRef.get().await()

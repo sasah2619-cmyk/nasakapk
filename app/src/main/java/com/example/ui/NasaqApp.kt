@@ -379,6 +379,7 @@ private fun AuthenticatedNasaqContent(user: FirebaseUser) {
 
                             OwnerTab.CUSTOMERS -> OwnerCustomersScreen(
                                 usersState = allUsersState,
+                                businessName = config.business_name,
                                 currency = config.currency,
                                 countryCode = config.country_code,
                                 isBusy = isBusy,

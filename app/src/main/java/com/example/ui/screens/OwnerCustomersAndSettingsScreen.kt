@@ -72,6 +72,7 @@ import com.example.util.BookingUtils
 @Composable
 fun OwnerCustomersScreen(
     usersState: UiState<List<UserProfile>>,
+    businessName: String,
     currency: String,
     countryCode: String,
     isBusy: Boolean,
@@ -200,7 +201,8 @@ fun OwnerCustomersScreen(
                                                 }
                                                 IconButton(
                                                     onClick = {
-                                                        if (!BookingUtils.openWhatsApp(context, user.phone, countryCode, "مرحباً ${user.display_name}")) {
+                                                        val senderBrand = businessName.trim().ifEmpty { "حلاقة المصطفى" }
+                                                        if (!BookingUtils.openWhatsApp(context, user.phone, countryCode, "مرحباً ${user.display_name}، معك $senderBrand")) {
                                                             onShowMessage("تعذر فتح واتساب")
                                                         }
                                                     }

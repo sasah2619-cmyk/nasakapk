@@ -105,17 +105,51 @@ fun DocumentSnapshot.toSystemConfigOrNull(): SystemConfig? {
         )
     }
     val blocked = (data["blocked_slots"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+    val defaultsConfig = SystemConfig()
+    val rawAppName = (data["app_name"] as? String).orEmpty().trim()
+    val rawBusinessName = (data["business_name"] as? String).orEmpty().trim()
+    val rawDescription = (data["business_description"] as? String).orEmpty().trim()
+    val rawConfirmTemplate = (data["whatsapp_confirm_template"] as? String).orEmpty().trim()
+    val rawReminderTemplate = (data["whatsapp_reminder_template"] as? String).orEmpty().trim()
+
+    val legacyWordRegex = Regex("(^|\\s)نَ?سَ?ق(?=$|\\s)")
+    fun String.hasLegacyBrand(): Boolean = contains("نَسَق") || legacyWordRegex.containsMatchIn(this)
+    fun String.replaceLegacyBrand(): String = this
+        .replace("مركز نَسَق للخدمات", "حلاقة المصطفى")
+        .replace("مركز نسق للخدمات", "حلاقة المصطفى")
+        .replace("صالون نَسَق للحلاقة", "حلاقة المصطفى")
+        .replace("صالون نسق للحلاقة", "حلاقة المصطفى")
+        .replace("نَسَق", "حلاقة المصطفى")
+        .replace(legacyWordRegex, "$1حلاقة المصطفى")
+
+    val normalizedBusinessName = when {
+        rawBusinessName.isBlank() || rawBusinessName.hasLegacyBrand() -> defaultsConfig.business_name
+        else -> rawBusinessName
+    }
+    val normalizedDescription = when {
+        rawDescription.hasLegacyBrand() -> defaultsConfig.business_description
+        else -> rawDescription
+    }
+    val normalizedConfirmTemplate = when {
+        rawConfirmTemplate.isBlank() -> defaultsConfig.whatsapp_confirm_template
+        else -> rawConfirmTemplate.replaceLegacyBrand()
+    }
+    val normalizedReminderTemplate = when {
+        rawReminderTemplate.isBlank() -> defaultsConfig.whatsapp_reminder_template
+        else -> rawReminderTemplate.replaceLegacyBrand()
+    }
+
     return SystemConfig(
-        app_name = (data["app_name"] as? String) ?: "حلاقة المصطفى",
+        app_name = if (rawAppName.isBlank() || rawAppName.hasLegacyBrand()) defaultsConfig.app_name else rawAppName,
         owner_email = (data["owner_email"] as? String) ?: INITIAL_OWNER_EMAIL,
-        business_name = (data["business_name"] as? String) ?: "حلاقة المصطفى",
-        business_description = (data["business_description"] as? String) ?: "",
+        business_name = normalizedBusinessName,
+        business_description = normalizedDescription,
         business_phone = (data["business_phone"] as? String) ?: "",
         business_address = (data["business_address"] as? String) ?: "",
         currency = (data["currency"] as? String) ?: "د.ع",
         country_code = (data["country_code"] as? String) ?: "+964",
-        whatsapp_confirm_template = (data["whatsapp_confirm_template"] as? String) ?: "",
-        whatsapp_reminder_template = (data["whatsapp_reminder_template"] as? String) ?: "",
+        whatsapp_confirm_template = normalizedConfirmTemplate,
+        whatsapp_reminder_template = normalizedReminderTemplate,
         working_hours = parsedHours,
         blocked_slots = blocked,
         previous_owner_email = data["previous_owner_email"] as? String,
